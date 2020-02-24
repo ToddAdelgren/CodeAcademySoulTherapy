@@ -34,6 +34,9 @@ export class SignupComponent implements OnInit {
           console.log('EMAIL ADDRESS IS ALREADY IN USE');
         } else {
           console.log('EMAIL ADDRESS IS NOT CURRENTLY BEING USED');
+          this.userService.user(this.signupForm.value.emailAddress, this.signupForm.value.password).subscribe((result: string) => {
+            console.log(result);
+          })
         }
       });
       //this.userStore.login(this.loginForm.value.username, this.loginForm.value.password);
