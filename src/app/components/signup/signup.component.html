@@ -10,15 +10,25 @@
     <form [formGroup]="signupForm">
         <div class="form-group">
             <label for="email-address">Email Address</label>
-            <input formControlName="emailAddress" type="email" class="form-control" id="email-address">
+            <input formControlName="emailAddress" [ngClass]="{'is-invalid': showEmailRequired}" type="email" class="form-control" id="email-address">
+            <small id="email-address-error" [ngClass]="{'hidden': hideAddressInUse}" class="form-text text-danger">Email address is already in use. Please try another.</small>
+            <div class="invalid-feedback">
+                Please enter Email Address
+            </div>
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input formControlName="password" type="password" class="form-control" id="password">
+            <input formControlName="password" [ngClass]="{'is-invalid': showPassRequired}" type="password" class="form-control" id="password">
+            <div class="invalid-feedback">
+                Please enter Password
+            </div>
         </div>
         <div class="form-group">
             <label for="confirm-password">Confirm Password</label>
-            <input formControlName="confirmPassword" type="password" class="form-control" id="confirm-password">
+            <input formControlName="confirmPassword" [ngClass]="{'is-invalid': showConfPassRequired}" type="password" class="form-control" id="confirm-password">
+            <div class="invalid-feedback">
+                Please enter Confirm Password
+            </div>
         </div>
         <button class="btn btn-primary" (click)="signup()">Sign Up</button>
     </form>

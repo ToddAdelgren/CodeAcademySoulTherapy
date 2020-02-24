@@ -12,6 +12,10 @@ export class SignupComponent implements OnInit {
 
   signupForm: FormGroup;
   hide: boolean;
+  hideAddressInUse: boolean = true;
+  showEmailRequired: boolean = false;
+  showPassRequired: boolean = false;
+  showConfPassRequired: boolean = false;
 
   constructor(private formBuilder: FormBuilder,
     private userService: UserService) { }
@@ -25,21 +29,41 @@ export class SignupComponent implements OnInit {
   }
 
   signup(){
-    //if(this.signupForm.valid){
-      console.log(`form emailAddress: ${this.signupForm.value.emailAddress}`);
+
+    // Clear values that may have been previously set.
+    this.hideAddressInUse = true;
+    this.showEmailRequired = false;
+    this.showPassRequired = false;
+    this.showConfPassRequired = false;
+
+    if (this.signupForm.valid) {
+
       // Check DynamoDB table SoulTherapyUser to see if this email address is already being used.
       this.userService.getUser(this.signupForm.value.emailAddress).subscribe((user: string) => {
+
         let userFromDB: any = user;
+
         if ("Item" in userFromDB) {
-          console.log('EMAIL ADDRESS IS ALREADY IN USE');
+
+          // Email address is already being used. Show error messge. 
+          this.hideAddressInUse = false;
+          document.getElementById("email-address").focus();
+
+
         } else {
-          console.log('EMAIL ADDRESS IS NOT CURRENTLY BEING USED');
+
+          // Add the user to the DynamoDB table SoulTherapyUser
           this.userService.user(this.signupForm.value.emailAddress, this.signupForm.value.password).subscribe((result: string) => {
-            console.log(result);
           })
         }
       });
-      //this.userStore.login(this.loginForm.value.username, this.loginForm.value.password);
-    //}
+
+    } else {
+
+      
+      this.showEmailRequired = !this.signupForm.controls.emailAddress.valid;
+      this.showPassRequired = !this.signupForm.controls.password.valid;
+      this.showConfPassRequired = !this.signupForm.controls.confirmPassword.valid;
+    }
   }
 }
