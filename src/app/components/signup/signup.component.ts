@@ -12,7 +12,6 @@ export class SignupComponent implements OnInit {
 
   signupForm: FormGroup;
   hide: boolean;
-  userFromDB: string;
 
   constructor(private formBuilder: FormBuilder,
     private userService: UserService) { }
@@ -27,8 +26,16 @@ export class SignupComponent implements OnInit {
 
   signup(){
     //if(this.signupForm.valid){
-      console.log(`emailAddress: ${this.signupForm.value.emailAddress}`);
-      this.userService.getUser(this.signupForm.value.emailAddress).subscribe((user: string) => this.userFromDB = user);
+      console.log(`form emailAddress: ${this.signupForm.value.emailAddress}`);
+      // Check DynamoDB table SoulTherapyUser to see if this email address is already being used.
+      this.userService.getUser(this.signupForm.value.emailAddress).subscribe((user: string) => {
+        let userFromDB: any = user;
+        if ("Item" in userFromDB) {
+          console.log('EMAIL ADDRESS IS ALREADY IN USE');
+        } else {
+          console.log('EMAIL ADDRESS IS NOT CURRENTLY BEING USED');
+        }
+      });
       //this.userStore.login(this.loginForm.value.username, this.loginForm.value.password);
     //}
   }
