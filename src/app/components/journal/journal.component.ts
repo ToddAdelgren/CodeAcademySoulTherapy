@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { User } from 'src/app/interfaces/user.interface';
+import { ProvokerService } from 'src/app/services/provoker.service';
 
 @Component({
   selector: 'app-journal',
@@ -16,8 +17,10 @@ export class JournalComponent implements OnInit {
   showJournalDateRequired: boolean = false;
   showJournalThoughtsRequired: boolean = false;
   user: User;
+  provoker: string;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder,
+    private provokerService: ProvokerService) {}
 
   ngOnInit(): void {
     this.journalForm = this.formBuilder.group({
@@ -29,7 +32,12 @@ export class JournalComponent implements OnInit {
       
       // User has not made any Journal entries.
       if (this.user.Provoker === 0) {
-        //this.provokerService.getProvoker(1).subscribe((data: Object) => {}
+        this.provokerService.getProvoker(1).subscribe((data: Object) => {
+  
+            this.provoker = data['Item']['Provoker'];
+            console.log(`Provoker:${this.provoker}`);
+  
+        });
       }
   }
 
