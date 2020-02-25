@@ -68,13 +68,9 @@ export class JournalComponent implements OnInit {
         JournalThoughts: this.journalForm.controls.journalThoughts.value
       }
 
-      console.log('before write to SoulTherapyJournal');
-      console.log(journalEntry);
       // Save the Journal entry to the DynamoDB table SoulTherapyJournal.
       this.journalService.journal(journalEntry).subscribe((data: string) => {
 
-        console.log('before write to SoulTherapyUser');
-        console.log(user);
         // Update the User's ProvokerId in DynamoDB table SoulTherapy
         this.userService.user(user).subscribe((data: string) => {
 
@@ -86,9 +82,7 @@ export class JournalComponent implements OnInit {
 
           localStorage.setItem('user', JSON.stringify(this.user));
 
-          console.log(`before ++:${this.user.ProvokerId}`);
           this.user.ProvokerId++
-          console.log(`after ++:${this.user.ProvokerId}`);
 
           // Get the Provoker entry.
           this.provokerService.getProvoker(this.user.ProvokerId).subscribe((data: Object) => {
