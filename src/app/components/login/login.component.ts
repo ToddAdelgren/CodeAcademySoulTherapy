@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
 import { User } from 'src/app/interfaces/user';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,8 @@ export class LoginComponent implements OnInit {
   user: User;
 
   constructor(private formBuilder: FormBuilder,
-    private userService: UserService) { }
+    private userService: UserService,
+    private router: Router) {}
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
@@ -42,20 +44,22 @@ export class LoginComponent implements OnInit {
 
           this.user = data['Item'];
 
-          console.log(`formpassword:${this.loginForm.value.password}`);
-          console.log(`dbpassword:${this.user.Password}`)
-
+          // Email Address in DynamoDB table SoulTherapyUser,
+          // database password not equal to entered password.
           if (this.user.Password != this.loginForm.value.password) {
 
             this.hideInvalidEmailPassword = false;
 
           } else {
 
-            console.log('LOGIN IS VALID');
+            // Valid login.
+            this.router.navigate(['/journal']);
+            
           }
           
         } else {
 
+          // Email Address not in DynamoDB table SoulTherapyUser
           this.hideInvalidEmailPassword = false;
 
         }

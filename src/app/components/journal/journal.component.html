@@ -1,0 +1,31 @@
+<header class="container-fluid b-header ht4">
+    <div class="row">
+        <div class="col-12 col-sm-8">SOUL</div>
+        <div class="col-12 col-sm-4">
+            <a [routerLink]="['/logout']">Logout</a>
+            <a [routerLink]="['/save']">Save</a>
+        </div>
+    </div>
+</header>
+<main>
+    <form [formGroup]="journalForm">
+        <div class="form-group">
+            <label for="journal-date">Date</label>
+            <input formControlName="journalDate" [ngClass]="{'is-invalid': showJournalDateRequired}" type="text" class="form-control" id="journal-date">
+            <small id="invalid-journal-date" [ngClass]="{'hidden': hideInvalidJournalDate}" class="form-text text-danger">Invalid Date</small>
+            <div class="invalid-feedback">
+                Please enter Date.
+            </div>
+        </div>
+        <p>THOUGHT PROVOKER</p>
+        <div class="form-group">
+            <label for="journal-thoughts">Thoughts</label>
+            <input formControlName="journalThoughts" [ngClass]="{'is-invalid': showJournalThoughtsRequired}" type="textarea" class="form-control" id="journal-thoughts">
+            <small id="invalid-journal-thoughts" [ngClass]="{'hidden': hideInvalidJournalThoughts}" class="form-text text-danger">Invalid Thoughts</small>
+            <div class="invalid-feedback">
+                Please enter your thoughts.
+            </div>
+        </div>
+    </form>
+</main>
+<app-footer></app-footer>
