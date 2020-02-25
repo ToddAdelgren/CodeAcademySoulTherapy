@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { User } from 'src/app/interfaces/user.interface';
 import { ProvokerService } from 'src/app/services/provoker.service';
+import { JournalService } from 'src/app/services/journal.service';
+import { JournalEntry } from 'src/app/interfaces/journal-entry.interface';
 
 @Component({
   selector: 'app-journal',
@@ -20,7 +22,8 @@ export class JournalComponent implements OnInit {
   provoker: string;
 
   constructor(private formBuilder: FormBuilder,
-    private provokerService: ProvokerService) {}
+    private provokerService: ProvokerService,
+    private journalService: JournalService) {}
 
   ngOnInit(): void {
     this.journalForm = this.formBuilder.group({
@@ -35,10 +38,38 @@ export class JournalComponent implements OnInit {
         this.provokerService.getProvoker(1).subscribe((data: Object) => {
   
             this.provoker = data['Item']['Provoker'];
-            console.log(`Provoker:${this.provoker}`);
   
         });
       }
   }
 
+  save(): void {
+    
+    // Clear values that may have been previously set.
+    this.hideInvalidJournalDate = true;
+    this.hideInvalidJournalThoughts = true;
+    this.showJournalDateRequired = false;
+    this.showJournalThoughtsRequired = false;
+
+    if (this.journalForm.valid) {
+
+      let user = JSON.parse(localStorage.getItem('user'))
+
+      let journalEntry: JournalEntry = {
+        EmailAddress: user.EmailAddress,
+        ProvokerId: user.Provoker,
+        JournalDate: this.journalForm.controls.journalDate.value,
+        JournalThoughts: this.journalForm.controls.journalThoughts.value
+      }
+
+      // Save the Journal entry to the DynamoDB table SoulTherapyJournal.
+      this.journalService.journal(journalEntry).subscribe((data: string) => {});
+
+    } else {
+
+      this.showJournalDateRequired = !this.journalForm.controls.journalDate.valid;
+      this.showJournalThoughtsRequired = !this.journalForm.controls.journalThoughts.valid;
+
+    }
+  }
 }

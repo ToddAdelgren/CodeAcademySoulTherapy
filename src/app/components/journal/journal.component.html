@@ -3,7 +3,6 @@
         <div class="col-12 col-sm-8">SOUL</div>
         <div class="col-12 col-sm-4">
             <a [routerLink]="['/logout']">Logout</a>
-            <a [routerLink]="['/save']">Save</a>
         </div>
     </div>
 </header>
@@ -26,6 +25,7 @@
                 Please enter your thoughts.
             </div>
         </div>
+        <button class="btn btn-primary" (click)="save()">Save</button>
     </form>
 </main>
 <app-footer></app-footer>
