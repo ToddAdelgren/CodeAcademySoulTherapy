@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
+import { User } from 'src/app/interfaces/user.interface';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
@@ -18,7 +20,8 @@ export class SignupComponent implements OnInit {
   showConfPassRequired: boolean = false;
 
   constructor(private formBuilder: FormBuilder,
-    private userService: UserService) { }
+    private userService: UserService,
+    private router: Router) {}
 
   ngOnInit(): void {
     this.signupForm = this.formBuilder.group({
@@ -52,8 +55,17 @@ export class SignupComponent implements OnInit {
 
         } else {
 
+          let user: User = {
+            EmailAddress: this.signupForm.value.emailAddress,
+            Password: this.signupForm.value.password,
+            ProvokerId: 0
+          }
+
           // Add the user to the DynamoDB table SoulTherapyUser
-          this.userService.user(this.signupForm.value.emailAddress, this.signupForm.value.password).subscribe((result: string) => {
+          this.userService.user(user).subscribe((result: string) => {
+
+            this.router.navigate(['/login']);
+            
           })
         }
       });
