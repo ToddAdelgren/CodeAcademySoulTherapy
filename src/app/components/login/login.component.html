@@ -11,6 +11,7 @@
         <div class="form-group">
             <label for="email-address">Email Address</label>
             <input formControlName="emailAddress" [ngClass]="{'is-invalid': showEmailRequired}" type="email" class="form-control" id="email-address">
+            <small id="invalid-email-password" [ngClass]="{'hidden': hideInvalidEmailPassword}" class="form-text text-danger">Invalid Email Address/Password combination. Please try again.</small>
             <div class="invalid-feedback">
                 Please enter Email Address
             </div>

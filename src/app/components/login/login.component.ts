@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
+import { User } from 'src/app/interfaces/user';
 
 @Component({
   selector: 'app-login',
@@ -11,8 +12,10 @@ import { UserService } from 'src/app/services/user.service';
 export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
+  hideInvalidEmailPassword: boolean = true;
   showEmailRequired: boolean = false;
   showPassRequired: boolean = false;
+  user: User;
 
   constructor(private formBuilder: FormBuilder,
     private userService: UserService) { }
@@ -33,26 +36,33 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
 
       // Check DynamoDB table SoulTherapyUser to see if this email address is valid.
-      this.userService.getUser(this.loginForm.value.emailAddress).subscribe((user: string) => {
+      this.userService.getUser(this.loginForm.value.emailAddress).subscribe((data: Object) => {
 
-        let userFromDB: any = user;
+        if ("Item" in data) {
 
-        if ("Item" in userFromDB) {
+          this.user = data['Item'];
 
-          // Email address is already being used. Show error messge. 
-          document.getElementById("email-address").focus();
+          console.log(`formpassword:${this.loginForm.value.password}`);
+          console.log(`dbpassword:${this.user.Password}`)
 
+          if (this.user.Password != this.loginForm.value.password) {
 
+            this.hideInvalidEmailPassword = false;
+
+          } else {
+
+            console.log('LOGIN IS VALID');
+          }
+          
         } else {
 
-          console.log('INVALID LOGIN')
+          this.hideInvalidEmailPassword = false;
 
         }
       });
 
     } else {
 
-      
       this.showEmailRequired = !this.loginForm.controls.emailAddress.valid;
       this.showPassRequired = !this.loginForm.controls.password.valid;
     }
