@@ -53,6 +53,7 @@ export class LoginComponent implements OnInit {
           } else {
 
             // Valid login.
+            localStorage.setItem('user', JSON.stringify(this.user));
             this.router.navigate(['/journal']);
             
           }

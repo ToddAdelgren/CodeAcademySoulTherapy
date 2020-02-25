@@ -1,4 +1,5 @@
 export interface User {
     EmailAddress: string,
-    Password: string
+    Password: string,
+    Provoker: number
 }
