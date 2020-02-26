@@ -156,10 +156,18 @@ export class JournalComponent implements OnInit {
 
       console.log('last check of user');
       console.log(this.user);
+
+      this.user.ProvokerId--
+
+      localStorage.setItem('user', JSON.stringify(this.user));
     
       if (this.user.ProvokerId >= 2) {
 
         this.hidePreviousBtn = false;
+
+      } else {
+
+        this.hidePreviousBtn = true;
 
       }
 
