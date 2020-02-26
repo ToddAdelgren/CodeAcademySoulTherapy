@@ -69,13 +69,13 @@ export class JournalComponent implements OnInit {
 
     if (this.journalForm.valid) {
 
-      let user = JSON.parse(localStorage.getItem('user'))
+      this.user = JSON.parse(localStorage.getItem('user'))
 
-      user.ProvokerId++
+      this.user.ProvokerId++
 
       let journalEntry: JournalEntry = {
-        EmailAddress: user.EmailAddress,
-        ProvokerId: user.ProvokerId,
+        EmailAddress: this.user.EmailAddress,
+        ProvokerId: this.user.ProvokerId,
         JournalDate: this.journalForm.controls.journalDate.value,
         JournalThoughts: this.journalForm.controls.journalThoughts.value
       }
@@ -84,7 +84,7 @@ export class JournalComponent implements OnInit {
       this.journalService.journal(journalEntry).subscribe((data: string) => {
 
         // Update the User's ProvokerId in DynamoDB table SoulTherapy
-        this.userService.user(user).subscribe((data: string) => {
+        this.userService.user(this.user).subscribe((data: string) => {
 
           // Clear out the input fields.
           this.provoker = 'Loading... Please wait';
@@ -120,5 +120,50 @@ export class JournalComponent implements OnInit {
       this.showJournalThoughtsRequired = !this.journalForm.controls.journalThoughts.valid;
 
     }
+  }
+
+  previous(): void {
+
+    this.user = JSON.parse(localStorage.getItem('user'));
+
+    console.log('previous clicked');
+    console.log(this.user);
+
+    console.log('NEXT LINE IS: this.journalService.getJournal');
+    // Get the Journal entry
+    this.journalService.getJournal(this.user, this.user.ProvokerId).subscribe((data: Object) => {
+      
+      console.log('back from http call');
+      console.log(data);
+
+      let journalEntry = data['Items'][0];
+
+      console.log(journalEntry);
+      console.log('journalEntry.JournalDate'+journalEntry.JournalDate);
+      console.log('journalEntry.JournalThoughts'+journalEntry.JournalThoughts);
+
+      this.journalForm = this.formBuilder.group({
+        journalDate: [journalEntry.JournalDate, Validators.compose([Validators.required])],
+        journalThoughts: [journalEntry.JournalThoughts, Validators.compose([Validators.required])],
+      });
+
+      // Get the Provoker entry.
+      this.provokerService.getProvoker(this.user.ProvokerId).subscribe((data: Object) => {
+      
+        this.provoker = data['Item']['Provoker'];
+  
+      });
+
+      console.log('last check of user');
+      console.log(this.user);
+    
+      if (this.user.ProvokerId >= 2) {
+
+        this.hidePreviousBtn = false;
+
+      }
+
+    });
+    
   }
 }
