@@ -13,7 +13,7 @@
     </div>
 </header>
 <main>
-    <form [formGroup]="loginForm">
+    <form [formGroup]="loginForm" class="mt-4">
         <div class="form-group">
             <label for="email-address">Email Address</label>
             <input formControlName="emailAddress" [ngClass]="{'is-invalid': showEmailRequired}" type="email" class="form-control" id="email-address">
@@ -29,7 +29,10 @@
                 Please enter Password
             </div>
         </div>
-        <button class="btn btn-primary" (click)="login()">Log In</button>
+        <button class="btn btn-outline-primary c-soul mb-4" (click)="login()">Log In</button>
+
+        <!-- <button type="button" class="btn btn-lg btn-block btn-outline-primary c-soul" (click)="signup()">Sign up for free</button> -->
+
     </form>
 </main>
 <app-footer></app-footer>
