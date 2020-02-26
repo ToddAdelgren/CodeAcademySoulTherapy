@@ -15,6 +15,8 @@ export class SignupComponent implements OnInit {
   signupForm: FormGroup;
   hide: boolean;
   hideAddressInUse: boolean = true;
+  hidePasswordNoMatch: boolean = true;
+  hideConfPassNoMatch: boolean = true;
   showEmailRequired: boolean = false;
   showPassRequired: boolean = false;
   showConfPassRequired: boolean = false;
@@ -35,11 +37,22 @@ export class SignupComponent implements OnInit {
 
     // Clear values that may have been previously set.
     this.hideAddressInUse = true;
+    this.hidePasswordNoMatch = true;
+    this.hideConfPassNoMatch = true;
     this.showEmailRequired = false;
     this.showPassRequired = false;
     this.showConfPassRequired = false;
 
     if (this.signupForm.valid) {
+
+      if (this.signupForm.value.password != this.signupForm.value.confirmPassword) {
+
+        this.hidePasswordNoMatch = false;
+        this.hideConfPassNoMatch = false;
+
+        return;
+
+      }
 
       // Check DynamoDB table SoulTherapyUser to see if this email address is already being used.
       this.userService.getUser(this.signupForm.value.emailAddress).subscribe((user: string) => {
@@ -71,11 +84,11 @@ export class SignupComponent implements OnInit {
       });
 
     } else {
-
       
       this.showEmailRequired = !this.signupForm.controls.emailAddress.valid;
       this.showPassRequired = !this.signupForm.controls.password.valid;
       this.showConfPassRequired = !this.signupForm.controls.confirmPassword.valid;
+
     }
   }
 }

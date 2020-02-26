@@ -31,7 +31,7 @@ export class JournalComponent implements OnInit {
 
   ngOnInit(): void {
     this.journalForm = this.formBuilder.group({
-      journalDate: ['', Validators.compose([Validators.required])],
+      journalDate: ['02/26/2020', Validators.compose([Validators.required])],
       journalThoughts: ['', Validators.compose([Validators.required])],
       });
 

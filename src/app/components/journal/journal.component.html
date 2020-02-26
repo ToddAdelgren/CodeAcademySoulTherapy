@@ -13,6 +13,7 @@
     </div>
 </header>
 <main>
+    <h2 class="mt-4 c-soul">Journal</h2>
     <form [formGroup]="journalForm">
         <div class="form-group">
             <label for="journal-date">Date</label>
@@ -22,7 +23,7 @@
                 Please enter Date.
             </div>
         </div>
-        <p>{{provoker}}</p>
+        <h1 class="my-5">{{provoker}}</h1>
         <div class="form-group">
             <label for="journal-thoughts">Thoughts</label>
             <input formControlName="journalThoughts" [ngClass]="{'is-invalid': showJournalThoughtsRequired}" type="textarea" class="form-control" id="journal-thoughts">
@@ -31,7 +32,7 @@
                 Please enter your thoughts.
             </div>
         </div>
-        <button class="btn btn-primary" (click)="save()">Save</button>
+        <button class="btn btn-outline-primary c-soul mb-4" (click)="save()">Save</button>
     </form>
 </main>
 <app-footer></app-footer>

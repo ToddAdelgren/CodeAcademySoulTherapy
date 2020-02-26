@@ -13,7 +13,8 @@
     </div>
 </header>
 <main>
-    <form [formGroup]="signupForm">
+    <h2 class="mt-4 c-soul">Sign Up</h2>
+    <form [formGroup]="signupForm" class="mt-4">
         <div class="form-group">
             <label for="email-address">Email Address</label>
             <input formControlName="emailAddress" [ngClass]="{'is-invalid': showEmailRequired}" type="email" class="form-control" id="email-address">
@@ -25,6 +26,7 @@
         <div class="form-group">
             <label for="password">Password</label>
             <input formControlName="password" [ngClass]="{'is-invalid': showPassRequired}" type="password" class="form-control" id="password">
+            <small id="password-no-match" [ngClass]="{'hidden': hidePasswordNoMatch}" class="form-text text-danger">Password does not match Confirm Password.</small>
             <div class="invalid-feedback">
                 Please enter Password
             </div>
@@ -32,11 +34,12 @@
         <div class="form-group">
             <label for="confirm-password">Confirm Password</label>
             <input formControlName="confirmPassword" [ngClass]="{'is-invalid': showConfPassRequired}" type="password" class="form-control" id="confirm-password">
+            <small id="confpass-no-match" [ngClass]="{'hidden': hideConfPassNoMatch}" class="form-text text-danger">Confirm Password does not match Password.</small>
             <div class="invalid-feedback">
                 Please enter Confirm Password
             </div>
         </div>
-        <button class="btn btn-primary" (click)="signup()">Sign Up</button>
+        <button class="btn btn-outline-primary c-soul mb-4" (click)="signup()">Sign Up</button>
     </form>
 </main>
 <app-footer></app-footer>
