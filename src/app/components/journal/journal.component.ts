@@ -18,6 +18,7 @@ export class JournalComponent implements OnInit {
   journalForm: FormGroup;
   hideInvalidJournalDate: boolean = true;
   hideInvalidJournalThoughts: boolean = true;
+  hidePreviousBtn: boolean = true;
   showJournalDateRequired: boolean = false;
   showJournalThoughtsRequired: boolean = false;
   user: User;
@@ -50,6 +51,12 @@ export class JournalComponent implements OnInit {
         this.provoker = data['Item']['Provoker'];
   
       });
+
+      if (this.user.ProvokerId >= 2) {
+
+        this.hidePreviousBtn = false;
+
+      }
   }
 
   save(): void {
@@ -96,6 +103,12 @@ export class JournalComponent implements OnInit {
             this.provoker = data['Item']['Provoker'];
       
           });
+
+          if (this.user.ProvokerId >= 2) {
+
+            this.hidePreviousBtn = false;
+    
+          }
 
         })
 
