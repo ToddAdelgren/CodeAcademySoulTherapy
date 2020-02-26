@@ -14,6 +14,6 @@ export class SplashComponent implements OnInit {
   }
 
   signup(){
-    this.router.navigate(['/login']);
+    this.router.navigate(['/signup']);
   }
 }

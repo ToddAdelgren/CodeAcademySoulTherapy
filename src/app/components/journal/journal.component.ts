@@ -21,7 +21,7 @@ export class JournalComponent implements OnInit {
   showJournalDateRequired: boolean = false;
   showJournalThoughtsRequired: boolean = false;
   user: User;
-  provoker: string;
+  provoker: string = 'Loading... Please wait';
   defaultDate: string;
 
   constructor(private formBuilder: FormBuilder,
@@ -80,8 +80,9 @@ export class JournalComponent implements OnInit {
         this.userService.user(user).subscribe((data: string) => {
 
           // Clear out the input fields.
+          this.provoker = 'Loading... Please wait';
           this.journalForm = this.formBuilder.group({
-            journalDate: ['', Validators.compose([Validators.required])],
+            journalDate: [this.defaultDate, Validators.compose([Validators.required])],
             journalThoughts: ['', Validators.compose([Validators.required])],
           });
 
