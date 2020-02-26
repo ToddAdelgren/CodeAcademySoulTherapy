@@ -1,9 +1,16 @@
 <header class="container-fluid b-header ht4">
     <div class="row">
-        <div class="col-12 col-sm-8">SOUL</div>
-        <div class="col-12 col-sm-4">
-            <a [routerLink]="['/login']">Login</a>
-            <a [routerLink]="['/signup']">Sign Up</a>
+        <div class="col-8">
+            <dl class="mb-0 mt-soul">
+                <dt class="c-soul">SOUL</dt>
+                <dd class="italic mb-0">THERAPY</dd>
+            </dl>
+        </div>
+        <div class="col-2 mt-4 text-right">
+            <a [routerLink]="['/login']" class="c-light">Login</a>          
+        </div>
+        <div class="col-2 mt-4">
+            <a [routerLink]="['/signup']" class="c-light">Sign Up</a>
         </div>
     </div>
 </header>
