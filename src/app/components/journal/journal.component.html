@@ -26,7 +26,7 @@
         <h1 class="my-5">{{provoker}}</h1>
         <div class="form-group">
             <label for="journal-thoughts">Thoughts</label>
-            <input formControlName="journalThoughts" [ngClass]="{'is-invalid': showJournalThoughtsRequired}" type="textarea" class="form-control" id="journal-thoughts">
+            <textarea formControlName="journalThoughts" [ngClass]="{'is-invalid': showJournalThoughtsRequired}" type="textarea" class="form-control" id="journal-thoughts" rows="5"></textarea>
             <small id="invalid-journal-thoughts" [ngClass]="{'hidden': hideInvalidJournalThoughts}" class="form-text text-danger">Invalid Thoughts</small>
             <div class="invalid-feedback">
                 Please enter your thoughts.

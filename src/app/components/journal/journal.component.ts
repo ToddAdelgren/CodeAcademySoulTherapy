@@ -22,6 +22,7 @@ export class JournalComponent implements OnInit {
   showJournalThoughtsRequired: boolean = false;
   user: User;
   provoker: string;
+  defaultDate: string;
 
   constructor(private formBuilder: FormBuilder,
     private provokerService: ProvokerService,
@@ -30,8 +31,12 @@ export class JournalComponent implements OnInit {
     private router: Router) {}
 
   ngOnInit(): void {
+    let currentDate = new Date().toISOString().split('T')[0];
+
+    this.defaultDate = currentDate.split('-')[1] + "/" + currentDate.split('-')[2] + "/" + currentDate.split('-')[0];
+
     this.journalForm = this.formBuilder.group({
-      journalDate: ['02/26/2020', Validators.compose([Validators.required])],
+      journalDate: [this.defaultDate, Validators.compose([Validators.required])],
       journalThoughts: ['', Validators.compose([Validators.required])],
       });
 
