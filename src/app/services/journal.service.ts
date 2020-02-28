@@ -21,8 +21,6 @@ export class JournalService {
         JournalThoughts: ''
       }
 
-      console.log('journal.service');
-      console.log(journalEntry);
       return this.http.get(`https://30xu029kx1.execute-api.us-east-2.amazonaws.com/prod/journal/${user.EmailAddress}/${id}`);
   }
 

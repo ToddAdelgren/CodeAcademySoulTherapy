@@ -19,6 +19,7 @@ export class JournalComponent implements OnInit {
   hideInvalidJournalDate: boolean = true;
   hideInvalidJournalThoughts: boolean = true;
   hidePreviousBtn: boolean = true;
+  hideNextBtn: boolean = true;
   showJournalDateRequired: boolean = false;
   showJournalThoughtsRequired: boolean = false;
   user: User;
@@ -126,21 +127,10 @@ export class JournalComponent implements OnInit {
 
     this.user = JSON.parse(localStorage.getItem('user'));
 
-    console.log('previous clicked');
-    console.log(this.user);
-
-    console.log('NEXT LINE IS: this.journalService.getJournal');
     // Get the Journal entry
     this.journalService.getJournal(this.user, this.user.ProvokerId).subscribe((data: Object) => {
-      
-      console.log('back from http call');
-      console.log(data);
 
       let journalEntry = data['Items'][0];
-
-      console.log(journalEntry);
-      console.log('journalEntry.JournalDate'+journalEntry.JournalDate);
-      console.log('journalEntry.JournalThoughts'+journalEntry.JournalThoughts);
 
       this.journalForm = this.formBuilder.group({
         journalDate: [journalEntry.JournalDate, Validators.compose([Validators.required])],
@@ -154,14 +144,16 @@ export class JournalComponent implements OnInit {
   
       });
 
-      console.log('last check of user');
-      console.log(this.user);
-
       this.user.ProvokerId--
 
       localStorage.setItem('user', JSON.stringify(this.user));
+
+      this.hideNextBtn = false;
+
+      console.log('looking at this.user')
+      console.log(this.user);
     
-      if (this.user.ProvokerId >= 2) {
+      if (this.user.ProvokerId >= 1) {
 
         this.hidePreviousBtn = false;
 
@@ -173,5 +165,57 @@ export class JournalComponent implements OnInit {
 
     });
     
+  }
+
+  next(): void {
+    
+    console.log('next clicked');
+    console.log(this.user.ProvokerId);
+
+    this.user.ProvokerId =+ 2;
+
+    console.log(this.user.ProvokerId);
+
+    // Get the Journal entry
+    this.journalService.getJournal(this.user, this.user.ProvokerId).subscribe((data: Object) => {
+
+      console.log('GETTING NEXT JOURNAL ENTRY');
+      console.log(data);
+      console.log('SHOWING data[Count]');
+      console.log(data['Count']);
+
+      if (data['Count'] === 0) {
+
+        this.journalForm = this.formBuilder.group({
+          journalDate: ['', Validators.compose([Validators.required])],
+          journalThoughts: ['', Validators.compose([Validators.required])],
+        });
+
+      } else {
+
+        let journalEntry = data['Items'][0];
+
+        this.journalForm = this.formBuilder.group({
+          journalDate: [journalEntry.JournalDate, Validators.compose([Validators.required])],
+          journalThoughts: [journalEntry.JournalThoughts, Validators.compose([Validators.required])],
+        });
+      }
+      
+      // Get the Provoker entry.
+      this.provokerService.getProvoker(this.user.ProvokerId).subscribe((data: Object) => {
+
+        console.log('back from http call');
+        console.log(data);
+
+        this.provoker = data['Item']['Provoker'];
+
+      });
+
+      if (this.user.ProvokerId >= 2) {
+
+        this.hidePreviousBtn = false;
+
+      }
+    });
   }
 }

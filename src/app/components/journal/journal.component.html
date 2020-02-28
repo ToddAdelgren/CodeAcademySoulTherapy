@@ -33,7 +33,8 @@
             </div>
         </div>
         <button class="btn btn-outline-primary c-soul mb-4" (click)="save()">Save</button>
-        <button class="btn btn-outline-primary c-soul mb-4 ml-3" [ngClass]="{'hidden': hidePreviousBtn}" (click)="previous()">Previous</button>
+        <button class="btn btn-outline-primary c-soul mb-4 ml-5" [ngClass]="{'hidden': hidePreviousBtn}" (click)="previous()">Previous</button>
+        <button class="btn btn-outline-primary c-soul mb-4 ml-5" [ngClass]="{'hidden': hideNextBtn}" (click)="next()">Next</button>
     </form>
 </main>
 <app-footer></app-footer>
