@@ -30,7 +30,7 @@ export class JournalComponent implements OnInit {
   provoker: string = 'Loading... Please wait';
   defaultDate: string;
   provoker$: Observable<ProvokerState>;
-  provoBeingDisplayed: number;
+  provokerBeingDisplayed: number;
 
   constructor(private formBuilder: FormBuilder,
     private provokerService: ProvokerService,
@@ -42,7 +42,7 @@ export class JournalComponent implements OnInit {
     }
 
   ngOnInit(): void {
-    this.provoker$.subscribe(id => this.provoBeingDisplayed = id.beingDisplayed);
+    this.provoker$.subscribe(id => this.provokerBeingDisplayed = id.beingDisplayed);
 
     let currentDate = new Date().toISOString().split('T')[0];
 
@@ -60,7 +60,7 @@ export class JournalComponent implements OnInit {
       this.store.dispatch(provokerActions.setBeingDisplayed({id: this.user.ProvokerId}));
       
       // Get the Provoker entry.
-      this.provokerService.getProvoker(this.provoBeingDisplayed).subscribe((data: Object) => {
+      this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
   
         this.provoker = data['Item']['Provoker'];
   
@@ -129,10 +129,10 @@ export class JournalComponent implements OnInit {
 
   previous(): void {
 
-    this.user = JSON.parse(localStorage.getItem('user'));
+    this.store.dispatch(provokerActions.reduceBeingDisplayed());
 
     // Get the Journal entry
-    this.journalService.getJournal(this.user, this.user.ProvokerId).subscribe((data: Object) => {
+    this.journalService.getJournal(this.user, this.provokerBeingDisplayed).subscribe((data: Object) => {
 
       let journalEntry = data['Items'][0];
 
@@ -142,15 +142,11 @@ export class JournalComponent implements OnInit {
       });
 
       // Get the Provoker entry.
-      this.provokerService.getProvoker(this.user.ProvokerId).subscribe((data: Object) => {
+      this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
       
         this.provoker = data['Item']['Provoker'];
   
       });
-
-      this.user.ProvokerId--
-
-      localStorage.setItem('user', JSON.stringify(this.user));
 
       this.hideNextBtn = false;
 
@@ -194,9 +190,6 @@ export class JournalComponent implements OnInit {
       
       // Get the Provoker entry.
       this.provokerService.getProvoker(this.user.ProvokerId).subscribe((data: Object) => {
-
-        console.log('back from http call');
-        console.log(data);
 
         this.provoker = data['Item']['Provoker'];
 
