@@ -6,6 +6,11 @@ import { JournalService } from 'src/app/services/journal.service';
 import { JournalEntry } from 'src/app/interfaces/journal-entry.interface';
 import { UserService } from 'src/app/services/user.service';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { ProvokerState } from 'src/app/store/reducers/provoker.reducer';
+import { Store, select } from '@ngrx/store';
+import { RootState } from 'src/app/store';
+import * as provokerActions from 'src/app/store/actions/provoker.action';
 
 @Component({
   selector: 'app-journal',
@@ -18,21 +23,27 @@ export class JournalComponent implements OnInit {
   journalForm: FormGroup;
   hideInvalidJournalDate: boolean = true;
   hideInvalidJournalThoughts: boolean = true;
-  hidePreviousBtn: boolean = true;
   hideNextBtn: boolean = true;
   showJournalDateRequired: boolean = false;
   showJournalThoughtsRequired: boolean = false;
   user: User;
   provoker: string = 'Loading... Please wait';
   defaultDate: string;
+  provoker$: Observable<ProvokerState>;
+  provoBeingDisplayed: number;
 
   constructor(private formBuilder: FormBuilder,
     private provokerService: ProvokerService,
     private journalService: JournalService,
     private userService: UserService,
-    private router: Router) {}
+    private router: Router,
+    private store: Store<RootState>) {
+      this.provoker$ = store.pipe(select('provoker'));
+    }
 
   ngOnInit(): void {
+    this.provoker$.subscribe(id => this.provoBeingDisplayed = id.beingDisplayed);
+
     let currentDate = new Date().toISOString().split('T')[0];
 
     this.defaultDate = currentDate.split('-')[1] + "/" + currentDate.split('-')[2] + "/" + currentDate.split('-')[0];
@@ -43,21 +54,18 @@ export class JournalComponent implements OnInit {
       });
 
       this.user = JSON.parse(localStorage.getItem('user'));
-      
+
       this.user.ProvokerId++
+
+      this.store.dispatch(provokerActions.setBeingDisplayed({id: this.user.ProvokerId}));
       
       // Get the Provoker entry.
-      this.provokerService.getProvoker(this.user.ProvokerId).subscribe((data: Object) => {
+      this.provokerService.getProvoker(this.provoBeingDisplayed).subscribe((data: Object) => {
   
         this.provoker = data['Item']['Provoker'];
   
       });
 
-      if (this.user.ProvokerId >= 2) {
-
-        this.hidePreviousBtn = false;
-
-      }
   }
 
   save(): void {
@@ -98,18 +106,14 @@ export class JournalComponent implements OnInit {
 
           this.user.ProvokerId++
 
+          this.store.dispatch(provokerActions.setBeingDisplayed({id: this.user.ProvokerId}));
+
           // Get the Provoker entry.
           this.provokerService.getProvoker(this.user.ProvokerId).subscribe((data: Object) => {
       
             this.provoker = data['Item']['Provoker'];
       
           });
-
-          if (this.user.ProvokerId >= 2) {
-
-            this.hidePreviousBtn = false;
-    
-          }
 
         })
 
@@ -149,19 +153,6 @@ export class JournalComponent implements OnInit {
       localStorage.setItem('user', JSON.stringify(this.user));
 
       this.hideNextBtn = false;
-
-      console.log('looking at this.user')
-      console.log(this.user);
-    
-      if (this.user.ProvokerId >= 1) {
-
-        this.hidePreviousBtn = false;
-
-      } else {
-
-        this.hidePreviousBtn = true;
-
-      }
 
     });
     
@@ -211,11 +202,6 @@ export class JournalComponent implements OnInit {
 
       });
 
-      if (this.user.ProvokerId >= 2) {
-
-        this.hidePreviousBtn = false;
-
-      }
     });
   }
 }

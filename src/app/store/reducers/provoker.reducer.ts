@@ -12,7 +12,8 @@ export const initialProvokerState: ProvokerState = {
 
 const provokerReducer = createReducer(
     initialProvokerState,
-    on(provokerActions.setBeingDisplayed, (state, {id})=> ({...state, beingDisplayed: id})),
+    on(provokerActions.setBeingDisplayed, (state, {id}) => ({...state, beingDisplayed: id})),
+    on(provokerActions.reduceBeingDisplayed, (state) => ({...state, beingDisplayed: --state.beingDisplayed})),
 );
 
 export function reducer(state: ProvokerState, action: Action){
