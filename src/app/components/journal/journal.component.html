@@ -25,7 +25,7 @@
         </div>
         <h1 class="my-5">{{provoker}}</h1>
         <div class="form-group">
-            <label for="journal-thoughts">Thoughts :beingDisplayed:{{(provoker$ | async).beingDisplayed}}:</label>
+            <label for="journal-thoughts">Thoughts :beingDisplayed:{{provokerBeingDisplayed}}: :lastFinished:{{provokerLastFinished}}:</label>
             <textarea formControlName="journalThoughts" [ngClass]="{'is-invalid': showJournalThoughtsRequired}" type="textarea" class="form-control" id="journal-thoughts" rows="5"></textarea>
             <small id="invalid-journal-thoughts" [ngClass]="{'hidden': hideInvalidJournalThoughts}" class="form-text text-danger">Invalid Thoughts</small>
             <div class="invalid-feedback">
@@ -33,7 +33,7 @@
             </div>
         </div>
         <button class="btn btn-outline-primary c-soul mb-4" (click)="save()">Save</button>
-        <button *ngIf="(provoker$ | async).beingDisplayed != 1" class="btn btn-outline-primary c-soul mb-4 ml-5" (click)="previous()">Previous</button>
+        <button *ngIf="provokerBeingDisplayed != 1" class="btn btn-outline-primary c-soul mb-4 ml-5" (click)="previous()">Previous</button>
         <button class="btn btn-outline-primary c-soul mb-4 ml-5" [ngClass]="{'hidden': hideNextBtn}" (click)="next()">Next</button>
     </form>
 </main>

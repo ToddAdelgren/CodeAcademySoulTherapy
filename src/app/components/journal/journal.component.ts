@@ -11,6 +11,7 @@ import { ProvokerState } from 'src/app/store/reducers/provoker.reducer';
 import { Store, select } from '@ngrx/store';
 import { RootState } from 'src/app/store';
 import * as provokerActions from 'src/app/store/actions/provoker.action';
+import { AppVarsService } from 'src/app/services/app-vars.service';
 
 @Component({
   selector: 'app-journal',
@@ -30,15 +31,16 @@ export class JournalComponent implements OnInit {
   provoker: string = 'Loading... Please wait';
   defaultDate: string;
   //provoker$: Observable<ProvokerState>;
-  //provokerBeingDisplayed: number;
-  //provokerLastFinished: number;
+  provokerBeingDisplayed: number = 0;
+  provokerLastFinished: number = 0;
 
   constructor(private formBuilder: FormBuilder,
     private provokerService: ProvokerService,
     private journalService: JournalService,
     private userService: UserService,
     private router: Router,
-    private store: Store<RootState>) {
+    private store: Store<RootState>,
+    private appVarsService: AppVarsService) {
       //this.provoker$ = store.pipe(select('provoker'));
     }
 
@@ -56,11 +58,14 @@ export class JournalComponent implements OnInit {
       });
 
       //this.store.dispatch(provokerActions.setBeingDisplayed({id: x}));
+      this.provokerLastFinished = this.appVarsService.getLastFinished();
+      this.provokerBeingDisplayed = this.provokerLastFinished + 1;
+      this.appVarsService.setBeingDisplayed(this.provokerBeingDisplayed);
       
       // Get the Provoker entry.
-      this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
+      this.provokerService.getProvoker(this.appVarsService.getBeingDisplayed()).subscribe((data: Object) => {
   
-        //this.provoker = data['Item']['Provoker'];
+        this.provoker = data['Item']['Provoker'];
   
       });
 
@@ -77,8 +82,8 @@ export class JournalComponent implements OnInit {
     if (this.journalForm.valid) {
 
       let journalEntry: JournalEntry = {
-        EmailAddress: this.user.EmailAddress,
-        ProvokerId: this.provokerBeingDisplayed,
+        EmailAddress: this.appVarsService.getEmailAddress(),
+        ProvokerId: this.appVarsService.getBeingDisplayed(),
         JournalDate: this.journalForm.controls.journalDate.value,
         JournalThoughts: this.journalForm.controls.journalThoughts.value
       }
@@ -86,8 +91,11 @@ export class JournalComponent implements OnInit {
       // Save the Journal entry to the DynamoDB table SoulTherapyJournal.
       this.journalService.journal(journalEntry).subscribe((data: string) => {
 
+        this.provokerLastFinished = this.appVarsService.getBeingDisplayed();  // TODDDEBUG - DISPLAY ONLY/REMOVE AFTER TESTING
+        this.appVarsService.setLastFinished(this.appVarsService.getBeingDisplayed());
+
         // Update the User's ProvokerId in DynamoDB table SoulTherapy
-        this.userService.user(this.user).subscribe((data: string) => {
+        this.userService.user(this.appVarsService.getUser()).subscribe((data: string) => {
 
           // Clear out the input fields.
           this.provoker = 'Loading... Please wait';
@@ -99,8 +107,11 @@ export class JournalComponent implements OnInit {
           //this.store.dispatch(provokerActions.setLastFinished({id: this.provokerBeingDisplayed}))
           //this.store.dispatch(provokerActions.incrementBeingDisplayed());
 
-          // Get the Provoker entry.
-          this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
+          this.appVarsService.setBeingDisplayed(this.appVarsService.getBeingDisplayed() + 1);
+          this.provokerBeingDisplayed = this.appVarsService.getBeingDisplayed();  // TODDDEBUG - DISPLAY ONLY/REMOVE AFTER TESTING
+
+          // Get the next Provoker entry.
+          this.provokerService.getProvoker(this.appVarsService.getBeingDisplayed()).subscribe((data: Object) => {
       
             this.provoker = data['Item']['Provoker'];
       
@@ -121,9 +132,11 @@ export class JournalComponent implements OnInit {
   previous(): void {
 
     //this.store.dispatch(provokerActions.reduceBeingDisplayed());
+    this.appVarsService.setBeingDisplayedPrevious();
+    this.provokerBeingDisplayed = this.appVarsService.getBeingDisplayed();
 
     // Get the Journal entry
-    this.journalService.getJournal(this.user, this.provokerBeingDisplayed).subscribe((data: Object) => {
+    this.journalService.getJournal(this.appVarsService.getUser(), this.appVarsService.getBeingDisplayed()).subscribe((data: Object) => {
 
       let journalEntry = data['Items'][0];
 
@@ -133,7 +146,7 @@ export class JournalComponent implements OnInit {
       });
 
       // Get the Provoker entry.
-      this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
+      this.provokerService.getProvoker(this.appVarsService.getBeingDisplayed()).subscribe((data: Object) => {
       
         this.provoker = data['Item']['Provoker'];
   
