@@ -48,35 +48,25 @@ export class JournalComponent implements OnInit {
     //this.provoker$.subscribe(id => this.provokerBeingDisplayed = id.beingDisplayed);
     //this.provoker$.subscribe(id => this.provokerLastFinished = id.lastFinished);
 
-    let currentDate = new Date().toISOString().split('T')[0];
+    this.initForm();
 
-    this.defaultDate = currentDate.split('-')[1] + "/" + currentDate.split('-')[2] + "/" + currentDate.split('-')[0];
+    //this.store.dispatch(provokerActions.setBeingDisplayed({id: x}));
+    this.provokerLastFinished = this.appVarsService.getLastFinished();
+    this.provokerBeingDisplayed = this.provokerLastFinished + 1;
+    
+    // Get the Provoker entry.
+    this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
 
-    this.journalForm = this.formBuilder.group({
-      journalDate: [this.defaultDate, Validators.compose([Validators.required])],
-      journalThoughts: ['', Validators.compose([Validators.required])],
-      });
+      this.provoker = data['Item']['Provoker'];
 
-      //this.store.dispatch(provokerActions.setBeingDisplayed({id: x}));
-      this.provokerLastFinished = this.appVarsService.getLastFinished();
-      this.provokerBeingDisplayed = this.provokerLastFinished + 1;
-      
-      // Get the Provoker entry.
-      this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
-  
-        this.provoker = data['Item']['Provoker'];
-  
-      });
+    });
 
   }
 
   save(): void {
     
     // Clear values that may have been previously set.
-    this.hideInvalidJournalDate = true;
-    this.hideInvalidJournalThoughts = true;
-    this.showJournalDateRequired = false;
-    this.showJournalThoughtsRequired = false;
+    this.clearPrevious();
 
     if (this.journalForm.valid) {
 
@@ -91,6 +81,7 @@ export class JournalComponent implements OnInit {
       this.journalService.journal(journalEntry).subscribe((data: string) => {
 
         this.provokerLastFinished = this.provokerBeingDisplayed;
+        this.appVarsService.setLastFinished(this.provokerLastFinished);
 
         // Update the User's ProvokerId in DynamoDB table SoulTherapy
         this.userService.user(this.appVarsService.getUser()).subscribe((data: string) => {
@@ -128,6 +119,9 @@ export class JournalComponent implements OnInit {
 
   previous(): void {
 
+    // Clear values that may have been previously set.
+    this.clearPrevious();
+
     //this.store.dispatch(provokerActions.reduceBeingDisplayed());
     this.provokerBeingDisplayed = this.provokerBeingDisplayed - 1;
 
@@ -154,6 +148,9 @@ export class JournalComponent implements OnInit {
 
   next(): void {
 
+    // Clear values that may have been previously set.
+    this.clearPrevious();
+
     this.provokerBeingDisplayed = this.provokerBeingDisplayed + 1;
 
     // Get the Journal entry
@@ -161,8 +158,11 @@ export class JournalComponent implements OnInit {
 
       if (data['Count'] === 0) {
 
+        let currentDate = new Date().toISOString().split('T')[0];
+        this.defaultDate = currentDate.split('-')[1] + "/" + currentDate.split('-')[2] + "/" + currentDate.split('-')[0];
+
         this.journalForm = this.formBuilder.group({
-          journalDate: ['', Validators.compose([Validators.required])],
+          journalDate: [this.defaultDate, Validators.compose([Validators.required])],
           journalThoughts: ['', Validators.compose([Validators.required])],
         });
 
@@ -185,4 +185,55 @@ export class JournalComponent implements OnInit {
 
     });
   }
+
+  update(): void {
+
+    // Clear values that may have been previously set.
+    this.clearPrevious();
+
+    if (this.journalForm.valid) {
+
+      let journalEntry: JournalEntry = {
+        EmailAddress: this.appVarsService.getEmailAddress(),
+        ProvokerId: this.provokerBeingDisplayed,
+        JournalDate: this.journalForm.controls.journalDate.value,
+        JournalThoughts: this.journalForm.controls.journalThoughts.value
+      }
+
+      // Save the Journal entry to the DynamoDB table SoulTherapyJournal.
+      this.journalService.journal(journalEntry).subscribe((data: string) => {
+
+        this.next()
+
+      });
+
+    } else {
+
+      this.showJournalDateRequired = !this.journalForm.controls.journalDate.valid;
+      this.showJournalThoughtsRequired = !this.journalForm.controls.journalThoughts.valid;
+
+    }
+  }
+
+  clearPrevious(): void {
+
+    // Clear values that may have been previously set.
+    this.hideInvalidJournalDate = true;
+    this.hideInvalidJournalThoughts = true;
+    this.showJournalDateRequired = false;
+    this.showJournalThoughtsRequired = false;
+
+  }
+
+  initForm(): void {
+    let currentDate = new Date().toISOString().split('T')[0];
+
+    this.defaultDate = currentDate.split('-')[1] + "/" + currentDate.split('-')[2] + "/" + currentDate.split('-')[0];
+
+    this.journalForm = this.formBuilder.group({
+      journalDate: [this.defaultDate, Validators.compose([Validators.required])],
+      journalThoughts: ['', Validators.compose([Validators.required])],
+    });
+  }
+
 }

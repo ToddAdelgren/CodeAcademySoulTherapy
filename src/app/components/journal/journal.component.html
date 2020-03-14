@@ -32,7 +32,8 @@
                 Please enter your thoughts.
             </div>
         </div>
-        <button class="btn btn-outline-primary c-soul mb-4" (click)="save()">Save</button>
+        <button *ngIf="provokerBeingDisplayed > provokerLastFinished" class="btn btn-outline-primary c-soul mb-4" (click)="save()">Save</button>
+        <button *ngIf="provokerBeingDisplayed < provokerLastFinished || provokerBeingDisplayed == provokerLastFinished" class="btn btn-outline-primary c-soul mb-4" (click)="update()">Update</button>
         <button *ngIf="provokerBeingDisplayed != 1" class="btn btn-outline-primary c-soul mb-4 ml-5" (click)="previous()">Previous</button>
         <button *ngIf="provokerBeingDisplayed < provokerLastFinished || provokerBeingDisplayed == provokerLastFinished" class="btn btn-outline-primary c-soul mb-4 ml-5" (click)="next()">Next</button>
     </form>
