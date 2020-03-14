@@ -60,10 +60,9 @@ export class JournalComponent implements OnInit {
       //this.store.dispatch(provokerActions.setBeingDisplayed({id: x}));
       this.provokerLastFinished = this.appVarsService.getLastFinished();
       this.provokerBeingDisplayed = this.provokerLastFinished + 1;
-      this.appVarsService.setBeingDisplayed(this.provokerBeingDisplayed);
       
       // Get the Provoker entry.
-      this.provokerService.getProvoker(this.appVarsService.getBeingDisplayed()).subscribe((data: Object) => {
+      this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
   
         this.provoker = data['Item']['Provoker'];
   
@@ -83,7 +82,7 @@ export class JournalComponent implements OnInit {
 
       let journalEntry: JournalEntry = {
         EmailAddress: this.appVarsService.getEmailAddress(),
-        ProvokerId: this.appVarsService.getBeingDisplayed(),
+        ProvokerId: this.provokerBeingDisplayed,
         JournalDate: this.journalForm.controls.journalDate.value,
         JournalThoughts: this.journalForm.controls.journalThoughts.value
       }
@@ -91,8 +90,7 @@ export class JournalComponent implements OnInit {
       // Save the Journal entry to the DynamoDB table SoulTherapyJournal.
       this.journalService.journal(journalEntry).subscribe((data: string) => {
 
-        this.provokerLastFinished = this.appVarsService.getBeingDisplayed();  // TODDDEBUG - DISPLAY ONLY/REMOVE AFTER TESTING
-        this.appVarsService.setLastFinished(this.appVarsService.getBeingDisplayed());
+        this.provokerLastFinished = this.provokerBeingDisplayed;
 
         // Update the User's ProvokerId in DynamoDB table SoulTherapy
         this.userService.user(this.appVarsService.getUser()).subscribe((data: string) => {
@@ -107,11 +105,10 @@ export class JournalComponent implements OnInit {
           //this.store.dispatch(provokerActions.setLastFinished({id: this.provokerBeingDisplayed}))
           //this.store.dispatch(provokerActions.incrementBeingDisplayed());
 
-          this.appVarsService.setBeingDisplayed(this.appVarsService.getBeingDisplayed() + 1);
-          this.provokerBeingDisplayed = this.appVarsService.getBeingDisplayed();  // TODDDEBUG - DISPLAY ONLY/REMOVE AFTER TESTING
+          this.provokerBeingDisplayed = this.provokerBeingDisplayed + 1;
 
           // Get the next Provoker entry.
-          this.provokerService.getProvoker(this.appVarsService.getBeingDisplayed()).subscribe((data: Object) => {
+          this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
       
             this.provoker = data['Item']['Provoker'];
       
@@ -132,11 +129,10 @@ export class JournalComponent implements OnInit {
   previous(): void {
 
     //this.store.dispatch(provokerActions.reduceBeingDisplayed());
-    this.appVarsService.setBeingDisplayedPrevious();
-    this.provokerBeingDisplayed = this.appVarsService.getBeingDisplayed();
+    this.provokerBeingDisplayed = this.provokerBeingDisplayed - 1;
 
     // Get the Journal entry
-    this.journalService.getJournal(this.appVarsService.getUser(), this.appVarsService.getBeingDisplayed()).subscribe((data: Object) => {
+    this.journalService.getJournal(this.appVarsService.getUser(), this.provokerBeingDisplayed).subscribe((data: Object) => {
 
       let journalEntry = data['Items'][0];
 
@@ -146,13 +142,11 @@ export class JournalComponent implements OnInit {
       });
 
       // Get the Provoker entry.
-      this.provokerService.getProvoker(this.appVarsService.getBeingDisplayed()).subscribe((data: Object) => {
+      this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
       
         this.provoker = data['Item']['Provoker'];
   
       });
-
-      this.hideNextBtn = false;
 
     });
     
@@ -160,10 +154,10 @@ export class JournalComponent implements OnInit {
 
   next(): void {
 
-    this.user.ProvokerId =+ 2;
+    this.provokerBeingDisplayed = this.provokerBeingDisplayed + 1;
 
     // Get the Journal entry
-    this.journalService.getJournal(this.user, this.user.ProvokerId).subscribe((data: Object) => {
+    this.journalService.getJournal(this.appVarsService.getUser(), this.provokerBeingDisplayed).subscribe((data: Object) => {
 
       if (data['Count'] === 0) {
 
@@ -183,7 +177,7 @@ export class JournalComponent implements OnInit {
       }
       
       // Get the Provoker entry.
-      this.provokerService.getProvoker(this.user.ProvokerId).subscribe((data: Object) => {
+      this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
 
         this.provoker = data['Item']['Provoker'];
 
