@@ -3,6 +3,11 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
 import { User } from 'src/app/interfaces/user.interface';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { ProvokerState } from 'src/app/store/reducers/provoker.reducer';
+import { Store, select } from '@ngrx/store';
+import { RootState } from 'src/app/store';
+import * as provokerActions from 'src/app/store/actions/provoker.action';
 
 @Component({
   selector: 'app-login',
@@ -17,12 +22,18 @@ export class LoginComponent implements OnInit {
   showEmailRequired: boolean = false;
   showPassRequired: boolean = false;
   user: User;
+  //provoker$: Observable<ProvokerState>;
+  //provokerLastFinished: number
 
   constructor(private formBuilder: FormBuilder,
     private userService: UserService,
-    private router: Router) {}
+    private router: Router,
+    private store: Store<RootState>) {
+      //this.provoker$ = store.pipe(select('provoker'));
+    }
 
   ngOnInit(): void {
+    //this.provoker$.subscribe(id => this.provokerLastFinished = id.lastFinished);
     this.loginForm = this.formBuilder.group({
       emailAddress: ['', Validators.compose([Validators.required])],
       password: ['', Validators.compose([Validators.required])],
@@ -54,6 +65,9 @@ export class LoginComponent implements OnInit {
 
             // Valid login.
             localStorage.setItem('user', JSON.stringify(this.user));
+            // TODDDEBUG - line above will go away because
+            // 1. user.emailaddress should be saved in state
+            //this.store.dispatch(provokerActions.setLastFinished({id: this.user.ProvokerId}));
             this.router.navigate(['/journal']);
             
           }

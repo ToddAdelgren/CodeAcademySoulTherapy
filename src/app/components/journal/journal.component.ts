@@ -29,8 +29,9 @@ export class JournalComponent implements OnInit {
   user: User;
   provoker: string = 'Loading... Please wait';
   defaultDate: string;
-  provoker$: Observable<ProvokerState>;
-  provokerBeingDisplayed: number;
+  //provoker$: Observable<ProvokerState>;
+  //provokerBeingDisplayed: number;
+  //provokerLastFinished: number;
 
   constructor(private formBuilder: FormBuilder,
     private provokerService: ProvokerService,
@@ -38,11 +39,12 @@ export class JournalComponent implements OnInit {
     private userService: UserService,
     private router: Router,
     private store: Store<RootState>) {
-      this.provoker$ = store.pipe(select('provoker'));
+      //this.provoker$ = store.pipe(select('provoker'));
     }
 
   ngOnInit(): void {
-    this.provoker$.subscribe(id => this.provokerBeingDisplayed = id.beingDisplayed);
+    //this.provoker$.subscribe(id => this.provokerBeingDisplayed = id.beingDisplayed);
+    //this.provoker$.subscribe(id => this.provokerLastFinished = id.lastFinished);
 
     let currentDate = new Date().toISOString().split('T')[0];
 
@@ -53,16 +55,12 @@ export class JournalComponent implements OnInit {
       journalThoughts: ['', Validators.compose([Validators.required])],
       });
 
-      this.user = JSON.parse(localStorage.getItem('user'));
-
-      this.user.ProvokerId++
-
-      this.store.dispatch(provokerActions.setBeingDisplayed({id: this.user.ProvokerId}));
+      //this.store.dispatch(provokerActions.setBeingDisplayed({id: x}));
       
       // Get the Provoker entry.
       this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
   
-        this.provoker = data['Item']['Provoker'];
+        //this.provoker = data['Item']['Provoker'];
   
       });
 
@@ -78,13 +76,9 @@ export class JournalComponent implements OnInit {
 
     if (this.journalForm.valid) {
 
-      this.user = JSON.parse(localStorage.getItem('user'))
-
-      this.user.ProvokerId++
-
       let journalEntry: JournalEntry = {
         EmailAddress: this.user.EmailAddress,
-        ProvokerId: this.user.ProvokerId,
+        ProvokerId: this.provokerBeingDisplayed,
         JournalDate: this.journalForm.controls.journalDate.value,
         JournalThoughts: this.journalForm.controls.journalThoughts.value
       }
@@ -102,14 +96,11 @@ export class JournalComponent implements OnInit {
             journalThoughts: ['', Validators.compose([Validators.required])],
           });
 
-          localStorage.setItem('user', JSON.stringify(this.user));
-
-          this.user.ProvokerId++
-
-          this.store.dispatch(provokerActions.setBeingDisplayed({id: this.user.ProvokerId}));
+          //this.store.dispatch(provokerActions.setLastFinished({id: this.provokerBeingDisplayed}))
+          //this.store.dispatch(provokerActions.incrementBeingDisplayed());
 
           // Get the Provoker entry.
-          this.provokerService.getProvoker(this.user.ProvokerId).subscribe((data: Object) => {
+          this.provokerService.getProvoker(this.provokerBeingDisplayed).subscribe((data: Object) => {
       
             this.provoker = data['Item']['Provoker'];
       
@@ -129,7 +120,7 @@ export class JournalComponent implements OnInit {
 
   previous(): void {
 
-    this.store.dispatch(provokerActions.reduceBeingDisplayed());
+    //this.store.dispatch(provokerActions.reduceBeingDisplayed());
 
     // Get the Journal entry
     this.journalService.getJournal(this.user, this.provokerBeingDisplayed).subscribe((data: Object) => {
@@ -155,21 +146,11 @@ export class JournalComponent implements OnInit {
   }
 
   next(): void {
-    
-    console.log('next clicked');
-    console.log(this.user.ProvokerId);
 
     this.user.ProvokerId =+ 2;
 
-    console.log(this.user.ProvokerId);
-
     // Get the Journal entry
     this.journalService.getJournal(this.user, this.user.ProvokerId).subscribe((data: Object) => {
-
-      console.log('GETTING NEXT JOURNAL ENTRY');
-      console.log(data);
-      console.log('SHOWING data[Count]');
-      console.log(data['Count']);
 
       if (data['Count'] === 0) {
 
